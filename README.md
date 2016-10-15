@@ -1,1 +1,1 @@
-# Install dependencies
+# Alexa integration for tastekid
