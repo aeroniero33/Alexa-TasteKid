@@ -6,11 +6,17 @@ To make the zip just
 
 And upload it to lambda.
 
+# Intents
+
+- `AddReferenceMovie` Add more reference.
+- `GetReferences` Ask what movies we have so far.
+- `RemoveReferenceMovie` Remove movies (scratch {movie}/forget about
+  {movie}/forget {movie}).
+- `ResetReferenceMovies` Reset (forget everything/let's start again)
+- `RemoveLastReference` Remove last movie (scratch that)
+- `RepeatSuggestions` Repeat movies (come again)
+- `EndSession` End session (thanks/that's it/that would be it)
+
 # Polishing
 
-- Add more intents:
-  - Remove movies (scratch {movie}/forget about {movie}/forget {movie})
-  - Reset (forget everything/let's start again)
-  - Remove last movie (scratch that)
-  - End session (thanks/that's it/that would be it)
 - Randomize answers (I would suggest.../How about...)

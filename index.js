@@ -30,9 +30,9 @@ function getMovieRecomendations (movieTitles, errCb, cb) {
     var respobj = JSON.parse(body);
     if (!respobj) {errCb("No response"); return;}
     if (!respobj.Similar ||
-      !respobj.Similar.Results ||
-      typeof respobj.Similar.Results.map !== 'function' ||
-      respobj.Similar.Results.some(function (e) {return typeof e.Name !== 'string';})) {
+        !respobj.Similar.Results ||
+        typeof respobj.Similar.Results.map !== 'function' ||
+        respobj.Similar.Results.some(function (e) {return typeof e.Name !== 'string';})) {
       errCb("Bad resp format: " + body);
       return;
     }
@@ -56,26 +56,81 @@ Recommender.prototype.eventHandlers.onLaunch = function (launchRequest, session,
 Recommender.prototype.eventHandlers.onSessionStarted = function (sessionStartedRequest, session) {};
 Recommender.prototype.eventHandlers.onSessionEnded = function (sessionEndedRequest, session) {};
 
-Recommender.prototype.intentHandlers = {
-  Alexakid: function (intent, session, response) {
-    if (!session.attributes.movies) session.attributes.movies = [];
+function respond (session, response) {
+  session.attributes.max_results = session.attributes.max_results || 6;
+  getMovieRecomendations(session.attributes.movies, function (err) {
+    console.error("ERROR:", err);
+    session.attributes.movies = [];
+    response.ask("An error occured...", "Let's try from scratch!");
+  }, function (recommendations) {
+    recommendations = recommendations.slice(0, session.attributes.max_results);
+    console.log("Found recommendations:", recommendations);
+    response.ask("I recomend " +
+                 movieListToString(recommendations.slice(0, MAX_RESULTS)),
+                 "Hit me with more!");
+  });
+}
 
-    var movie = intent.slots.Movie.value;
-    console.log("Movie:", movie);
-    session.attributes.movies.push(movie);
-    console.log("Looking up movies:", session.attributes.movies);
-    getMovieRecomendations(session.attributes.movies, function (err) {
-      console.error("ERROR:", err);
-      session.attributes.movies = [];
-      response.ask("An error occured...", "Let's try from scratch!");
-    }, function (recommendations) {
-      recommendations = recommendations.slice(0, MAX_RESULTS);
-      console.log("Found recommendations:", recommendations);
-      response.ask("I recomend " +
-                   recommendations.slice(0, MAX_RESULTS).reduce(
-                     function(a,b) {return a + ", " + b;}, ""),
-                   "Hit me with more!");
+function movieListToString (movies, connectingWord) {
+  if (movies.length === 0) return "no movies";
+  if (movies.length === 1) return movies[0];
+  connectingWord = " " + (connectingWord || "or") + " ";
+  if (movies.length === 2) return movies[0] + connectingWord + movies[1];
+  var last2 = movies.slice(-2),
+      final = last2[0] + connectingWord + last2[1];
+  return movies.slice(0,-2).reverse().reduce(
+    function (ret, x) {return x + ', ' + ret;}, final);
+}
+
+function forgetMovie (movie, session, response) {
+  if (!session.attributes.movies) session.attributes.movies = [];
+  session.attributes.movies =
+    session.attributes.movies.filter(function (m) {
+      return movie != m;
     });
+  report (session, response);
+}
+
+function putMovie (movie, session, response) {
+  if (!session.attributes.movies) session.attributes.movies = [];
+  session.attributes.lastMovie = movie;
+  session.attributes.movies.push(movie);
+}
+
+function report (session, response) {
+  response.tell("So far you said you like " +
+                movieListToString(session.attributes.movies, "and"));
+}
+
+Recommender.prototype.intentHandlers = {
+  AddReferenceMovie: function (intent, session, response) {
+    putMovie(intent.slots.Movie.value, session, response);
+    respond(session, response);
+  },
+  GetReferences: function (intent, session, response) {
+    report(session, response);
+  },
+  RemoveReferenceMovie: function (intent, session, response) {
+    forgetMovie(intent.slots.Movie.value, session, response);
+  },
+  ResetReferenceMovies: function (intent, session, response) {
+    session.attributes.movies = [];
+    response.tell("Done! Let's start again");
+  },
+  RemoveLastReference: function (intent, session, response) {
+    forgetMovie(session.attributes.lastMovie, session, response);
+    respond(session, response);
+  },
+  RepeatSuggestions: function (intent, session, response) {
+    respond(session, response);
+  },
+  EndSession: function (intent, session, response) {
+    response.shouldEndSession(true);
+  },
+
+  // AMAZON INTENTS
+  "AMAZON.StopIntent": function (intent, session, response) {
+    response.tell("Come again!");
   }
 };
 
