@@ -39,7 +39,45 @@ function getMovieRecomendations (movieTitles, errCb, cb) {
   });
 };
 
+var AlexaSkill = require('./AlexaSkill');
+var APP_ID = undefined;
+
+function Recommender () {
+  AlexaSkill.call(this, APP_ID);
+}
+Recommender.prototype = Object.create(AlexaSkill.prototype);
+Recommender.prototype.constructor = Recommender;
+
+Recommender.prototype.eventHandlers.onLaunch = function (launchRequest, session, response) {
+  response.ask("Welcome to Tastekid alexa integration!",
+               "Tell me a movie you like. I will recommend some for you");
+};
+Recommender.prototype.eventHandlers.onSessionStarted = function (sessionStartedRequest, session) {};
+Recommender.prototype.eventHandlers.onSessionEnded = function (sessionEndedRequest, session) {};
+
+Recommender.prototype.intentHandlers = {
+  Alexakid: function (intent, session, response) {
+    if (!session.attributes.movies) session.attributes.movies = [];
+
+    var movie = intent.slots.Movie.value;
+    console.log("Movie:", movie);
+    session.attributes.movies.push(movie);
+    console.log("Looking up movies:", session.attributes.movies);
+    getMovieRecomendations(session.attributes.movies, function (err) {
+      console.error("ERROR:", err);
+      session.attributes.movies = [];
+      response.ask("An error occured...", "Let's try from scratch!");
+    }, function (recommendations) {
+      console.log("Found recommendations:", recommendations);
+      response.ask("I recomend " +
+                   recommendations.reduce(function(a,b) {return a + ", " + b},
+                                          recommendations[0] || ""), // XXX: Dont repeat the first one
+                   "Hit me with more!");
+    });
+  }
+};
 
 exports.handler = function (event, context, callback) {
-    callback(null, JSON.stringify({event: event, context: context}));
+  var recommender = new Recommender();
+  recommender.execute(event, context);
 };
