@@ -1,0 +1,17 @@
+{
+    "name": "Facebook-lambda",
+    "version": "0.0.1",
+    "description": "Access to facebook interface.",
+    "keywords": [
+        "facebook"
+    ],
+    "author": "Codeblenders",
+    "contributors": [],
+    "dependencies": {
+    },
+    "scripts": {
+        "zip": "scripts/zip.sh .",
+        "pyserve": "scripts/pyserve.sh"
+    },
+    "devDependencies": {}
+}
