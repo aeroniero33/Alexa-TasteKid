@@ -1,5 +1,6 @@
 var request = require('request');
 var ENDPOINT = 'https://www.tastekid.com/api/similar?k=244644-SocialBo-QYEURQG0&type=movies&q=';
+var MAX_RESULTS = 6;
 
 function getMovieRecomendations (movieTitles, errCb, cb) {
   function joinTitles(titles) {
@@ -68,10 +69,11 @@ Recommender.prototype.intentHandlers = {
       session.attributes.movies = [];
       response.ask("An error occured...", "Let's try from scratch!");
     }, function (recommendations) {
+      recommendations = recommendations.slice(0, MAX_RESULTS);
       console.log("Found recommendations:", recommendations);
       response.ask("I recomend " +
-                   recommendations.reduce(function(a,b) {return a + ", " + b},
-                                          recommendations[0] || ""), // XXX: Dont repeat the first one
+                   recommendations.slice(0, MAX_RESULTS).reduce(
+                     function(a,b) {return a + ", " + b;}, ""),
                    "Hit me with more!");
     });
   }
