@@ -16,7 +16,3 @@ And upload it to lambda.
 - `RemoveLastReference` Remove last movie (scratch that)
 - `RepeatSuggestions` Repeat movies (come again)
 - `EndSession` End session (thanks/that's it/that would be it)
-
-# Polishing
-
-- Randomize answers (I would suggest.../How about...)
