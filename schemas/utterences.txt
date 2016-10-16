@@ -2,9 +2,25 @@ AddReferenceMovie recommend similar to {Movie}
 AddReferenceMovie find a similar movie to {Movie}
 AddReferenceMovie similar movie to {Movie}
 AddReferenceMovie similar to {Movie}
+AddReferenceMovie find me a movie like {Movie}
+AddReferenceMovie find movie like {Movie}
+AddReferenceMovie movie like {Movie}
+AddReferenceMovie movie similar to {Movie}
+AddReferenceMovie suggest movie like {Movie}
+AddReferenceMovie suggest movie similar to {Movie}
+AddReferenceMovie a movie like {Movie}
+AddReferenceMovie a movie similar to {Movie}
+AddReferenceMovie {Movie}
+AddReferenceMovie something like {Movie}
+AddReferenceMovie something similar to {Movie}
 
 GetReferences what are my references
 GetReferences what have I said so far
+GetReferences what movies do I like
+GetReferences which movies do I like
+GetReferences what have I told you
+GetReferences what have I told you so far
+GetReferences what have I said
 
 RemoveReferenceMovie remove {Movie}
 RemoveReferenceMovie remove {Movie} from references
@@ -14,6 +30,13 @@ RemoveLastReference remove last reference
 
 RepeatSuggestions repeat
 RepeatSuggestions repeat suggestions
+RepeatSuggestions recommend me a movie
+RepeatSuggestions suggest me a movie
+RepeatSuggestions find me a movie
+RepeatSuggestions recommend me something
+RepeatSuggestions find me something
+RepeatSuggestions suggest something
+RepeatSuggestions recommend me something to watch
 
 EndSession end session
 EndSession goodbye alexa
