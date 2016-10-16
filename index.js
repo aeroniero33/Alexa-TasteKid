@@ -56,7 +56,20 @@ Recommender.prototype.eventHandlers.onLaunch = function (launchRequest, session,
 Recommender.prototype.eventHandlers.onSessionStarted = function (sessionStartedRequest, session) {};
 Recommender.prototype.eventHandlers.onSessionEnded = function (sessionEndedRequest, session) {};
 
+function ssml(str) {
+  return {
+    type: "SSML",
+    speech: "<speak>" + str + "</speak>"
+  };
+}
+
 function respond (session, response) {
+  if (session.attributes.movies.length === 0){
+    response.ask(ssml("You should tell me at least one example movie..."),
+                 "Give me something to work with");
+    return;
+  }
+
   session.attributes.max_results = session.attributes.max_results || 6;
   getMovieRecomendations(session.attributes.movies, function (err) {
     console.error("ERROR:", err);
@@ -65,9 +78,10 @@ function respond (session, response) {
   }, function (recommendations) {
     recommendations = recommendations.slice(0, session.attributes.max_results);
     console.log("Found recommendations:", recommendations);
-    response.ask("I recomend " +
-                 movieListToString(recommendations.slice(0, MAX_RESULTS)),
-                 "Hit me with more!");
+    var resp = ssml("I recomend <break strength=\"x-weak\"/>" +
+                        movieListToString(recommendations.slice(0, MAX_RESULTS),
+                                          ",or,"));
+    response.ask(resp, "Hit me with more!");
   });
 }
 
@@ -98,11 +112,23 @@ function putMovie (movie, session, response) {
 }
 
 function report (session, response) {
-  response.tell("So far you said you like " +
-                movieListToString(session.attributes.movies, "and"));
+  var result = ssml("So far you said you like <break strength=\"x-weak\"/>" +
+                    movieListToString(session.attributes.movies, ",and,"));
+  response.ask(result, "What now?");
 }
 
-Recommender.prototype.intentHandlers = {
+function loggedIntents(dict) {
+  var ret = {};
+  Object.getOwnPropertyNames(dict).forEach(function (n) {
+    ret[n] = function (i,s,r) {
+      console.log("Intent:", n);
+      return dict[n].call(this,i,s,r);
+    };
+  });
+  return ret;
+}
+
+Recommender.prototype.intentHandlers = loggedIntents({
   AddReferenceMovie: function (intent, session, response) {
     putMovie(intent.slots.Movie.value, session, response);
     respond(session, response);
@@ -112,27 +138,30 @@ Recommender.prototype.intentHandlers = {
   },
   RemoveReferenceMovie: function (intent, session, response) {
     forgetMovie(intent.slots.Movie.value, session, response);
+    respond(session, response);
   },
   ResetReferenceMovies: function (intent, session, response) {
     session.attributes.movies = [];
-    response.tell("Done! Let's start again");
+    response.ask("Done!", "Let's start again");
   },
   RemoveLastReference: function (intent, session, response) {
     forgetMovie(session.attributes.lastMovie, session, response);
     respond(session, response);
   },
   RepeatSuggestions: function (intent, session, response) {
+    console.log("Repeat suggestions");
     respond(session, response);
   },
   EndSession: function (intent, session, response) {
-    response.shouldEndSession(true);
+    console.log("Ending session.");
+    response.tell("See you later");
   },
 
   // AMAZON INTENTS
   "AMAZON.StopIntent": function (intent, session, response) {
     response.tell("Come again!");
   }
-};
+});
 
 exports.handler = function (event, context, callback) {
   var recommender = new Recommender();
