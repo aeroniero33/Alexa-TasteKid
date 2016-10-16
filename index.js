@@ -64,9 +64,9 @@ function ssml(str) {
 }
 
 function respond (session, response) {
-  if (session.attributes.movies.length === 0){
-    response.ask(ssml("You should tell me at least one example movie..."),
-                 "Give me something to work with");
+  if (!session.attributes.movies || session.attributes.movies.length === 0) {
+    response.ask(ssml("What movies are you in the mood for?"),
+                 "Give me an example.");
     return;
   }
 
@@ -112,6 +112,12 @@ function putMovie (movie, session, response) {
 }
 
 function report (session, response) {
+  if (!session.attributes.movies || session.attributes.movies.length === 0){
+    response.ask(ssml("You haven't told me about any movies you like"),
+                 "Tell me a movie you are in the mood for.");
+    return;
+  }
+
   var result = ssml("So far you said you like <break strength=\"x-weak\"/>" +
                     movieListToString(session.attributes.movies, ",and,"));
   response.ask(result, "What now?");
