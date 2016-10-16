@@ -1,0 +1,55 @@
+{
+  "intents": [
+    {
+      "intent": "AddReferenceMovie",
+      "slots": [
+        {
+          "name": "Movie",
+          "type": "Movies"
+        }
+      ],
+      "intent": "GetReferences",
+      "slots": [
+        {
+          "name": "Movie",
+          "type": "Movies"
+        }
+      ],
+      "intent": "RemoveReferenceMovie",
+      "slots": [
+        {
+          "name": "Movie",
+          "type": "Movies"
+        }
+      ],
+      "intent": "RemoveLastReference",
+      "slots": [
+        {
+          "name": "Movie",
+          "type": "Movies"
+        }
+      ],
+      "intent": "RepeatSuggestions",
+      "slots": [
+        {
+          "name": "Movie",
+          "type": "Movies"
+        }
+      ],
+      "intent": "EndSession",
+      "slots": [
+        {
+          "name": "Movie",
+          "type": "Movies"
+        }
+      ],
+      "intent": "ResetReferenceMovies",
+      "slots": [
+        {
+          "name": "Movie",
+          "type": "Movies"
+        }
+      ]
+    }
+  ]
+}

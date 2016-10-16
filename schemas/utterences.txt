@@ -1,0 +1,23 @@
+AddReferenceMovie recommend similar to {Movie}
+AddReferenceMovie find a similar movie to {Movie}
+AddReferenceMovie similar movie to {Movie}
+AddReferenceMovie similar to {Movie}
+
+GetReferences what are my references
+GetReferences what have I said so far
+
+RemoveReferenceMovie remove {Movie}
+RemoveReferenceMovie remove {Movie} from references
+
+RemoveLastReference remove last movie
+RemoveLastReference remove last reference
+
+RepeatSuggestions repeat
+RepeatSuggestions repeat suggestions
+
+EndSession end session
+EndSession goodbye alexa
+
+ResetReferenceMovies forget what I said
+ResetReferenceMovies reset reference movies
+ResetReferenceMovies reset
